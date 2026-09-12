@@ -13,6 +13,7 @@
 | **程序体积** | Windows 版约 `33.6 MB`；macOS 版约 `16.1 MB` |
 | **支持系统** | **Windows & macOS 全支持**：Windows 10 / Windows 11 (64位) 及 macOS 12+ (Apple Silicon M系列原生优化) |
 | **微信版本** | 微信 4.x 桌面端（运行并登录状态） |
+| **官方演示视频** | [哔哩哔哩高清演示：微微聊天记录一键导出为Markdown本地文档](https://www.bilibili.com/video/BV1rgYQ6PEPx) (BV1rgYQ6PEPx) |
 | **商业模式** | **付费社群会员专属**，基于 ServiceHub 远程密码机鉴权，绑定会员账号方可使用 |
 | **统一存放路径** | `E:\BaiduSyncdisk\WorkSpace\ForAgent\SKILLS-自媒体\skill-wechat-chat-exporter-member\`<br/>• Windows: `微信聊天记录导出助手.exe`<br/>• macOS: `微信聊天记录导出助手-macOS.zip` |
 
@@ -93,6 +94,8 @@ sequenceDiagram
 
 ## 五、 会员极简操作步骤 (User Workflow)
 
+> 📺 **实操演示视频**：如需直观了解软件运行界面与 Markdown 导出全流程，可直接观看哔哩哔哩实操演示视频：[《【实用工具】微微聊天记录一键导出为Markdown本地文档》](https://www.bilibili.com/video/BV1rgYQ6PEPx)。
+
 1. **第一步：启动微信**
    - 确保电脑已安装并登录 **微信 4.x**；
 2. **第二步：打开软件**
@@ -110,7 +113,7 @@ sequenceDiagram
 
 ## 六、 宣发文案策略与参考话术 (Copywriting Angles & Templates)
 
-负责分发撰写的智能体可根据不同受众使用以下 3 种宣传切入角度：
+负责分发撰写的智能体可根据不同受众使用以下 3 种宣传切入角度（宣发推文或社群通知末尾均可随附官方实操演示视频：[https://www.bilibili.com/video/BV1rgYQ6PEPx](https://www.bilibili.com/video/BV1rgYQ6PEPx)）：
 
 ### 视角 A：面向知识付费博主 / 社群运营者（效率赋能角度）
 > **标题参考**：【社群会员福利】微信群聊干货一键导出成知识库！全网首个微信 4.x 聊天记录导出助手正式发布（Win/Mac全支持）

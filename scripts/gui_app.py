@@ -183,7 +183,14 @@ class LoginDialog(ctk.CTkToplevel):
                 else:
                     self.after(0, lambda: self._on_fail("该账号未获得此技能的会员授权。"))
             except PermissionError as pe:
-                self.after(0, lambda: self._on_fail(f"鉴权未通过: 用户名或密码错误，请核对后重试"))
+                pe_str = str(pe)
+                if "过期" in pe_str:
+                    msg = "会员资格已过期，请联系社群管理员续费"
+                elif "密码错误" in pe_str:
+                    msg = "密码错误，请核对后重试"
+                else:
+                    msg = "请核对会员账号、密码或会员资格有效期"
+                self.after(0, lambda: self._on_fail(f"鉴权未通过: {msg}"))
             except Exception as e:
                 self.after(0, lambda: self._on_fail(f"连接失败: {str(e)}"))
 
