@@ -445,9 +445,7 @@ class WeChatExporterApp(ctk.CTk):
 
         ctk.CTkLabel(dir_row, text="导出保存目录:", font=ctk.CTkFont(size=12)).grid(row=0, column=0, sticky="w", padx=(0, 8))
 
-        default_base_dir = Path(r"E:\BaiduSyncdisk\WorkSpace\社交媒体\社群运营\聊天记录\私聊")
-        if not default_base_dir.exists():
-            default_base_dir = Path.home() / "Documents" / "微信聊天归档"
+        default_base_dir = Path.home() / "Documents" / "微信聊天归档"
 
         self.output_dir_entry = ctk.CTkEntry(dir_row)
         self.output_dir_entry.insert(0, str(default_base_dir))

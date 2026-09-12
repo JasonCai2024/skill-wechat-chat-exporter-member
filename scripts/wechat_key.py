@@ -72,24 +72,25 @@ def verify_enc_key(enc_key: bytes, db_page1: bytes) -> bool:
 def get_wechat_pids() -> List[Tuple[int, int]]:
     """获取正在运行的微信进程列表 [(pid, mem_kb)] (Windows: Weixin.exe, macOS: WeChat)。"""
     if sys.platform == "win32":
-        r = subprocess.run(
-            ["tasklist", "/FI", "IMAGENAME eq Weixin.exe", "/FO", "CSV", "/NH"],
-            capture_output=True,
-            text=True,
-            creationflags=subprocess.CREATE_NO_WINDOW,
-        )
         pids: List[Tuple[int, int]] = []
-        for line in r.stdout.strip().split("\n"):
-            if not line.strip():
-                continue
-            p = line.strip('"').split('","')
-            if len(p) >= 5:
-                try:
-                    pid = int(p[1])
-                    mem = int(p[4].replace(",", "").replace(" K", "").strip() or "0")
-                    pids.append((pid, mem))
-                except ValueError:
+        for img in ("Weixin.exe", "WeChat.exe"):
+            r = subprocess.run(
+                ["tasklist", "/FI", f"IMAGENAME eq {img}", "/FO", "CSV", "/NH"],
+                capture_output=True,
+                text=True,
+                creationflags=subprocess.CREATE_NO_WINDOW,
+            )
+            for line in r.stdout.strip().split("\n"):
+                if not line.strip():
                     continue
+                p = line.strip('"').split('","')
+                if len(p) >= 5:
+                    try:
+                        pid = int(p[1])
+                        mem = int(p[4].replace(",", "").replace(" K", "").strip() or "0")
+                        pids.append((pid, mem))
+                    except ValueError:
+                        continue
         pids.sort(key=lambda x: x[1], reverse=True)
         return pids
     elif sys.platform == "darwin":

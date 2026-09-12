@@ -17,7 +17,7 @@ argument-hint: [target-chat-or-name]
 在微信已登录状态下，通过 ServiceHub 远程密码机安全鉴权，将社群会员指定的群聊或私聊会话中的纯文本聊天记录，按自然月精准拆分并清洗为标准化的 Markdown 归档文档。
 
 ## Required Inputs
-1. **target**：目标群聊名称、好友昵称/备注或微信 ID（例如：`CC付费答疑群`、`姚先森`、`46112508908@chatroom`）。
+1. **target**：目标群聊名称、好友昵称/备注或微信 ID（例如：`社群答疑交流群`、`张三`、`46112508908@chatroom`）。
 2. **output-dir**（可选）：导出的 Markdown 文件保存目录。若不指定，默认输出至当前目录下的 `output/<目标名称>/`。
 3. **user / token**（可选）：ServiceHub 会员用户名与授权码（若已通过 `--login` 保存凭据则无需重复指定）。
 4. **self-name**（可选）：账号本人在记录中的统一显示名称，默认为 `CC`。

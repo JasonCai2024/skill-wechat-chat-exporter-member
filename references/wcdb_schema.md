@@ -36,7 +36,7 @@ table_name = "Msg_" + hashlib.md5(username.encode("utf-8")).hexdigest()
 - **示例 1（群聊）**：`46112508908@chatroom`  
   $\to$ MD5 为 `7bc4b862c1e3d9ed8e17a588446abaf8`  
   $\to$ 表名：`Msg_7bc4b862c1e3d9ed8e17a588446abaf8`
-- **示例 2（私聊）**：`yx16391405`  
+- **示例 2（私聊）**：`wxid_example123`  
   $\to$ MD5 为 `...`  
   $\to$ 表名：`Msg_...`
 

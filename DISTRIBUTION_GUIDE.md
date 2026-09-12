@@ -15,7 +15,7 @@
 | **微信版本** | 微信 4.x 桌面端（运行并登录状态） |
 | **官方演示视频** | [哔哩哔哩高清演示：微微聊天记录一键导出为Markdown本地文档](https://www.bilibili.com/video/BV1rgYQ6PEPx) (BV1rgYQ6PEPx) |
 | **商业模式** | **付费社群会员专属**，基于 ServiceHub 远程密码机鉴权，绑定会员账号方可使用 |
-| **统一存放路径** | `E:\BaiduSyncdisk\WorkSpace\ForAgent\SKILLS-自媒体\skill-wechat-chat-exporter-member\`<br/>• Windows: `微信聊天记录导出助手.exe`<br/>• macOS: `微信聊天记录导出助手-macOS.zip` |
+| **统一存放路径** | 项目根目录 `./`<br/>• Windows: `微信聊天记录导出助手.exe`<br/>• macOS: `微信聊天记录导出助手-macOS.zip` |
 
 ---
 

@@ -92,6 +92,7 @@ class WeChatDatabaseManager:
 
     def __init__(self, db_dir: str | Path, keys_map: dict[str, str]):
         self.db_dir = Path(db_dir).resolve()
+        self.self_wxid = self.db_dir.parent.name
         self.keys_map = keys_map  # {salt_hex: key_hex}
 
         self.contact_db_path = self.db_dir / "contact" / "contact.db"
@@ -342,8 +343,8 @@ class WeChatDatabaseManager:
                     if not clean_text:
                         continue
 
-                    # 发言人昵称解析
-                    if sender_wxid in ("wxid_hjl4i7u6vllc22", "jasoncai1101") or sender_wxid == "":
+                    # 发言人昵称解析（本人统一显示为 self_display_name）
+                    if not sender_wxid or sender_wxid == getattr(self, "self_wxid", ""):
                         sender_name = self_display_name
                     else:
                         c_info = contacts.get(sender_wxid, {})

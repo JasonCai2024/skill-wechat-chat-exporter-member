@@ -3,7 +3,7 @@
 """build_single_exe.py -- 微信 4.x 聊天记录导出助手自动化单文件打包脚本
 
 使用 PyInstaller 将 gui_app.py 编译为单个绿色免安装可执行文件 (.exe)，
-并直接输出至 E:\BaiduSyncdisk\LocalHub\微信聊天记录导出助手.exe
+并直接输出至当前工程目录 微信聊天记录导出助手.exe
 """
 
 import os

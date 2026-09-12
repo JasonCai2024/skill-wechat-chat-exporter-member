@@ -65,9 +65,9 @@ pip install sqlcipher3 zstandard
 |---|---|---|
 | **会员登录绑定** | “帮我绑定一下社群会员账号” | `python scripts/export_chat.py --login` |
 | **会话状态查询** | “帮我看看微信最近有哪些活跃的群聊或私聊” | `python scripts/export_chat.py --list --limit 10` |
-| **群聊记录导出** | “帮我把 CC付费答疑群 的聊天记录按月导出归档” | `python scripts/export_chat.py -t "CC付费答疑群" -o "./output/CC付费答疑群"` |
-| **私聊记录导出** | “把我和 姚先森 的私聊记录导出保存下来” | `python scripts/export_chat.py -t "姚先森" -o "./output/姚先森"` |
-| **时间范围过滤** | “帮我导出 2026年6月以后 创富引擎 的聊天记录” | `python scripts/export_chat.py -t "创富引擎-创始人" --since "2026-06-01"` |
+| **群聊记录导出** | “帮我把 产品运营交流群 的聊天记录按月导出归档” | `python scripts/export_chat.py -t "产品运营交流群" -o "./output/产品运营交流群"` |
+| **私聊记录导出** | “把我和 张三 的私聊记录导出保存下来” | `python scripts/export_chat.py -t "张三" -o "./output/张三"` |
+| **时间范围过滤** | “帮我导出 2026年6月以后 团队研讨群 的聊天记录” | `python scripts/export_chat.py -t "团队研讨群" --since "2026-06-01"` |
 
 ---
 
@@ -87,12 +87,12 @@ python scripts/export_chat.py --list --limit 10
 
 ### 3. 导出指定微信群聊
 ```bash
-python scripts/export_chat.py -t "CC付费答疑群" -o "./output/CC付费答疑群"
+python scripts/export_chat.py -t "产品运营交流群" -o "./output/产品运营交流群"
 ```
 
 ### 4. 导出指定好友私聊
 ```bash
-python scripts/export_chat.py -t "姚先森" -o "./output/姚先森"
+python scripts/export_chat.py -t "张三" -o "./output/张三"
 ```
 
 ---

@@ -37,9 +37,11 @@ def find_default_db_dir() -> Path | None:
         ])
     elif sys.platform == "win32":
         candidates.extend([
-            Path(r"D:\腾讯电脑管家软件搬家\C盘清理文件搬家\xwechat_files"),
             Path.home() / "Documents" / "xwechat_files",
             Path.home() / "Documents" / "WeChat Files",
+            Path("D:/xwechat_files"),
+            Path("E:/xwechat_files"),
+            Path("C:/xwechat_files"),
         ])
     else:
         candidates.extend([
