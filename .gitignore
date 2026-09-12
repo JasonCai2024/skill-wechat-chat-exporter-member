@@ -18,6 +18,7 @@ dist/
 dist_macos/
 *.spec
 *.zip
+*.exe
 
 # OS specific
 .DS_Store
