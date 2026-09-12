@@ -1,0 +1,24 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment variables & Credentials
+.env
+.env.local
+config.json
+credentials.json
+
+# Output directory
+output/
+
+# Build artifacts
+build/
+dist/
+dist_macos/
+*.spec
+*.zip
+
+# OS specific
+.DS_Store
+Thumbs.db

@@ -1,0 +1,44 @@
+name: Build macOS App
+
+on:
+  workflow_dispatch: # 支持在 GitHub 页面手动一键触发编译
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build-macos:
+    runs-on: macos-14 # 运行在 Apple Silicon (M系列) 免费云端虚拟机上
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install System Dependencies
+        run: |
+          brew install sqlcipher
+
+      - name: Install Python Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install pysqlcipher3 zstandard customtkinter pyinstaller darkdetect
+
+      - name: Build macOS App
+        run: |
+          python build_macos.py
+
+      - name: Compress App
+        run: |
+          cd dist_macos
+          zip -r 微信聊天记录导出助手-macOS.zip 微信聊天记录导出助手.app
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: 微信聊天记录导出助手-macOS
+          path: dist_macos/微信聊天记录导出助手-macOS.zip
