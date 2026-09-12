@@ -24,10 +24,39 @@ except ImportError:
     except ImportError:
         sqlcipher = None
 
-import zstandard
+try:
+    import zstandard
+    _ZSTD_DECOMPRESSOR = zstandard.ZstdDecompressor()
+except ImportError:
+    zstandard = None
+    _ZSTD_DECOMPRESSOR = None
 
-# 全局 zstd 解压器实例
-_ZSTD_DECOMPRESSOR = zstandard.ZstdDecompressor()
+
+def check_dependencies():
+    """检查核心解密与解压依赖库，缺失时给出极度友好的开箱即用指引。"""
+    missing = []
+    if sqlcipher is None:
+        missing.append("sqlcipher3 (或 pysqlcipher3)")
+    if zstandard is None:
+        missing.append("zstandard")
+
+    if missing:
+        msg = (
+            f"\n[!] 当前 Python 环境缺少必要的扩展依赖: {', '.join(missing)}\n\n"
+            "💡 为什么会出现此提示？\n"
+            "  您当前是通过系统 Python 解释器直接运行脚本源码，需要先配置对应的第三方扩展库。\n\n"
+            "✨ 解决方案推荐：\n"
+            "  【方案 A - 强烈推荐免配置直接运行 (小白首选，无需任何 Python 环境)】：\n"
+            "  无需折腾复杂的编译环境与 pip 依赖，直接双击运行项目根目录下已打包好的独立程序：\n"
+            "    👉 Windows 用户: 微信聊天记录导出助手.exe\n"
+            "    👉 macOS 用户: 解压运行 微信聊天记录导出助手-macOS.zip\n"
+            "  该程序已内置全部所需驱动，免安装、零依赖、即开即用！\n\n"
+            "  【方案 B - 源码二次开发或 CLI 命令行调用】：\n"
+            "  请在当前终端中执行以下命令安装依赖：\n"
+            "    pip install -r requirements.txt\n"
+            "  (注: Windows 下若 pip 安装 sqlcipher3 提示缺少 C++ 编译工具，强烈建议直接使用方案 A 的免安装 .exe 文件)"
+        )
+        raise ImportError(msg)
 
 
 def dict_row_factory(cursor, row):
@@ -43,12 +72,7 @@ def get_db_salt(db_path: str | Path) -> str:
 
 def open_encrypted_db(db_path: str | Path, key_hex: str) -> sqlite3.Connection:
     """以只读与 WAL 兼容模式打开 SQLCipher 4 加密数据库。"""
-    if sqlcipher is None:
-        raise ImportError(
-            "未检测到 sqlcipher3 模块。\n"
-            "Windows / macOS 请通过 pip 安装: pip install sqlcipher3 zstandard\n"
-            "若在 macOS Apple Silicon 上编译遇到问题，可使用: brew install sqlcipher && pip install pysqlcipher3"
-        )
+    check_dependencies()
 
     uri_path = Path(db_path).resolve().as_uri() + "?mode=ro&immutable=1"
     conn = sqlcipher.connect(uri_path, uri=True)

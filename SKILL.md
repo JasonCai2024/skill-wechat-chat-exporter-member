@@ -66,6 +66,10 @@ argument-hint: [target-chat-or-name]
 2. **索引文件**：在目标目录根下输出包含会话元信息的 `README.md`。
 3. **控制台总结**：输出包含月份、纯文本消息条数、文件大小及文件名的汇总清单。
 
+## Execution Modes
+- **模式 A（用户桌面端推荐）**：无需 Python 环境与命令行，直接双击运行根目录的 `微信聊天记录导出助手.exe`（或 macOS 运行 `微信聊天记录导出助手-macOS.zip`）。
+- **模式 B（AI 智能体 / CLI 驱动）**：由 AI 助手在终端调用 `python scripts/export_chat.py` 执行，需预先安装 `requirements.txt`。
+
 ## Examples
 
 ### 示例 1：社群会员首次登录绑定
@@ -85,5 +89,5 @@ python scripts/export_chat.py -t "CC付费答疑群" -o "./output/CC付费答疑
 
 ### 示例 4：导出指定联系人私聊记录（限定时间）
 ```powershell
-python scripts/export_chat.py -t "姚先森" -o "./output/姚先森" --since "2026-06-01"
+python scripts/export_chat.py -t "张三" -o "./output/张三" --since "2026-06-01"
 ```

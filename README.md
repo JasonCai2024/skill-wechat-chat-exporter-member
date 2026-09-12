@@ -49,11 +49,19 @@ sequenceDiagram
 - **微信要求**：微信 4.x 处于运行并已登录状态
 - **会员账号**：需要具备有效的 ServiceHub 社群会员账号与授权码
 
-### 安装依赖
+### 🚀 运行方式（二选一）
 
+#### 方式 1：免安装独立可执行程序（强烈推荐，普通用户首选）
+**无需安装 Python，无需配置任何第三方库**，直接双击运行对应平台的打包程序：
+- **Windows 用户**：直接双击项目根目录下的 **`微信聊天记录导出助手.exe`**；
+- **macOS 用户**：解压根目录下的 **`微信聊天记录导出助手-macOS.zip`**，双击运行应用程序。
+
+#### 方式 2：Python 源码与 CLI 命令行模式（开发者 / AI 智能体调用）
+若您需要在自定义 Python 环境下执行或通过 AI Agent 自动化调度，请先在当前 Python 终端安装依赖：
 ```bash
-pip install sqlcipher3 zstandard
+pip install -r requirements.txt
 ```
+*(注：Windows 环境下若 pip 安装 sqlcipher3 遇到缺少 C++ 编译环境的报错，强烈建议直接采用上方【方式 1】的可执行程序运行。)*
 
 ---
 
