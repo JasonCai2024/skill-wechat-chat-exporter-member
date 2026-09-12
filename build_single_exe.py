@@ -16,7 +16,7 @@ from pathlib import Path
 def main():
     root_dir = Path(__file__).resolve().parent
     entry_script = root_dir / "scripts" / "gui_app.py"
-    target_dist_dir = Path(r"E:\BaiduSyncdisk\LocalHub")
+    target_dist_dir = root_dir
     target_dist_dir.mkdir(parents=True, exist_ok=True)
 
     app_name = "微信聊天记录导出助手"
