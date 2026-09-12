@@ -326,12 +326,49 @@ def load_servicehub_credentials(
 def save_servicehub_credentials(username: str, passtoken: str, server_url: Optional[str] = None) -> None:
     """将社群会员凭据持久化保存到本地 ~/.servicehub/config.json。"""
     cfg_p = get_credentials_path()
-    data = {
-        "username": username.strip(),
-        "passtoken": passtoken.strip(),
-        "server_url": (server_url or DEFAULT_SERVICEHUB_URL).rstrip("/"),
-        "updated_at": time.strftime("%Y-%m-%d %H:%M:%S"),
-    }
+    data = {}
+    if cfg_p.exists():
+        try:
+            with open(cfg_p, "r", encoding="utf-8") as f:
+                data = json.load(f)
+        except Exception:
+            data = {}
+    data["username"] = username.strip()
+    data["passtoken"] = passtoken.strip()
+    data["server_url"] = (server_url or DEFAULT_SERVICEHUB_URL).rstrip("/")
+    data["updated_at"] = time.strftime("%Y-%m-%d %H:%M:%S")
+    with open(cfg_p, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+
+
+def load_custom_db_dir() -> Optional[str]:
+    """从本地 ~/.servicehub/config.json 读取用户手动指定的微信存储路径。"""
+    cfg_p = get_credentials_path()
+    if cfg_p.exists():
+        try:
+            with open(cfg_p, "r", encoding="utf-8") as f:
+                saved = json.load(f)
+                return saved.get("custom_db_dir")
+        except Exception:
+            pass
+    return None
+
+
+def save_custom_db_dir(custom_path: Optional[str]) -> None:
+    """将用户指定的数据库路径持久化保存到 ~/.servicehub/config.json 中。"""
+    cfg_p = get_credentials_path()
+    data = {}
+    if cfg_p.exists():
+        try:
+            with open(cfg_p, "r", encoding="utf-8") as f:
+                data = json.load(f)
+        except Exception:
+            data = {}
+    if custom_path:
+        data["custom_db_dir"] = str(custom_path)
+    else:
+        data.pop("custom_db_dir", None)
+    data["updated_at"] = time.strftime("%Y-%m-%d %H:%M:%S")
     with open(cfg_p, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 

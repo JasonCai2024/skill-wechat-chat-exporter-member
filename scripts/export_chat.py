@@ -25,9 +25,64 @@ import wechat_db
 import wechat_key
 
 
-def find_default_db_dir() -> Path | None:
-    """自动扫描定位本机微信 4.x 当前活跃账号的 db_storage 目录（按最后更新时间判定）。"""
+def resolve_db_dir_from_path(path: Path | str | None) -> Path | None:
+    """智能递归探测任意路径下的有效微信 4.x db_storage 目录。
+
+    支持传入：
+    1. db_storage 目录本身
+    2. 微信号文件夹 (包含 db_storage)
+    3. xwechat_files / WeChat Files 文件夹
+    4. 微信搬家后的上层自定义根目录
+    """
+    if not path:
+        return None
+    p = Path(path).resolve()
+    if not p.exists():
+        return None
+
+    # 直接命中 db_storage
+    if p.name == "db_storage" and (p / "session" / "session.db").exists():
+        return p
+    if (p / "db_storage" / "session" / "session.db").exists():
+        return p / "db_storage"
+
+    # 扫描多层子目录，按 session.db 更新时间倒序挑出当前活跃账号
     candidates = []
+    for pattern in ("*/db_storage", "*/*/db_storage", "*/*/*/db_storage"):
+        try:
+            for d in p.glob(pattern):
+                if d.is_dir():
+                    sess_f = d / "session" / "session.db"
+                    if sess_f.exists():
+                        mtime = sess_f.stat().st_mtime
+                        candidates.append((mtime, d))
+        except Exception:
+            pass
+
+    if candidates:
+        candidates.sort(key=lambda x: x[0], reverse=True)
+        return candidates[0][1]
+    return None
+
+
+def find_default_db_dir() -> Path | None:
+    """自动扫描定位本机微信 4.x 当前活跃账号的 db_storage 目录。
+
+    采用多层级渐进式发现机制：
+    1. 用户在客户端手动配置的持久化路径 (~/.servicehub/config.json)
+    2. 微信 4.x 官方配置文件 (%APPDATA%/Tencent/xwechat/config/*.ini)
+    3. 全盘驱动器根目录常见文件夹 (C:, D:, E:, F:, ...)
+    4. 系统文档与用户主目录默认路径 (Windows / macOS)
+    """
+    # 1. 优先读取用户之前在界面上手动指定过的持久化路径
+    saved_custom = wechat_key.load_custom_db_dir()
+    if saved_custom:
+        res = resolve_db_dir_from_path(saved_custom)
+        if res:
+            return res
+
+    candidates: list[Path] = []
+
     if sys.platform == "darwin":
         candidates.extend([
             Path.home() / "Library/Containers/com.tencent.xinWeChat/Data/Documents/xwechat_files",
@@ -36,12 +91,38 @@ def find_default_db_dir() -> Path | None:
             Path.home() / "Library/Application Support/com.tencent.xinWeChat",
         ])
     elif sys.platform == "win32":
+        # 2. 读取微信 4.x 的实际配置中心 (用户如果在微信设置中或通过电脑管家修改了文件存储路径，会写入此文件)
+        appdata = os.environ.get("APPDATA")
+        if appdata:
+            cfg_dir = Path(appdata) / "Tencent" / "xwechat" / "config"
+            if cfg_dir.exists():
+                for ini_file in cfg_dir.glob("*.ini"):
+                    try:
+                        raw = ini_file.read_bytes()
+                        for enc in ("utf-8", "gbk", "utf-16"):
+                            try:
+                                text = raw.decode(enc).strip()
+                                if text:
+                                    candidates.append(Path(text))
+                                break
+                            except Exception:
+                                pass
+                    except Exception:
+                        pass
+
+        # 3. 扫描 Windows 全盘各个驱动器根目录
+        import string
+        for letter in string.ascii_uppercase:
+            drive_root = Path(f"{letter}:/")
+            if drive_root.exists():
+                candidates.append(drive_root / "xwechat_files")
+                candidates.append(drive_root / "WeChat Files")
+
+        # 4. 系统默认文档目录与用户目录
         candidates.extend([
             Path.home() / "Documents" / "xwechat_files",
             Path.home() / "Documents" / "WeChat Files",
-            Path("D:/xwechat_files"),
-            Path("E:/xwechat_files"),
-            Path("C:/xwechat_files"),
+            Path.home() / "xwechat_files",
         ])
     else:
         candidates.extend([
@@ -50,22 +131,26 @@ def find_default_db_dir() -> Path | None:
         ])
 
     found = []
+    seen = set()
     for base in candidates:
-        if not base.exists():
-            continue
-        if base.name == "db_storage" and (base / "session" / "session.db").exists():
-            return base
-
-        for pattern in ("*/db_storage", "*/*/db_storage"):
-            for db_s in base.glob(pattern):
-                if db_s.is_dir():
-                    sess_p = db_s / "session" / "session.db"
-                    mtime = sess_p.stat().st_mtime if sess_p.exists() else db_s.stat().st_mtime
-                    found.append((mtime, db_s))
+        res = resolve_db_dir_from_path(base)
+        if res:
+            try:
+                resolved_key = str(res.resolve()).lower()
+                if resolved_key in seen:
+                    continue
+                seen.add(resolved_key)
+            except Exception:
+                pass
+            sess = res / "session" / "session.db"
+            mtime = sess.stat().st_mtime if sess.exists() else 0
+            found.append((mtime, res))
 
     if found:
+        # 按最后更新时间倒序排列，自动选中当前正在登录/最新活跃的微信账号
         found.sort(key=lambda x: x[0], reverse=True)
         return found[0][1]
+
     return None
 
 
@@ -128,7 +213,7 @@ def main():
         handle_login_interactive()
 
     # 1. 定位微信本地数据库根目录
-    db_dir = Path(args.db_dir) if args.db_dir else find_default_db_dir()
+    db_dir = resolve_db_dir_from_path(args.db_dir) if args.db_dir else find_default_db_dir()
     if not db_dir or not db_dir.exists():
         os_hint = "macOS 默认在 ~/Library/Containers/com.tencent.xinWeChat/Data/Documents/xwechat_files" if sys.platform == "darwin" else "Windows 默认在 Documents/xwechat_files"
         print(f"[ERROR] 未找到微信 4.x 的 db_storage 数据目录 ({os_hint})，请使用 --db-dir 手动指定。")

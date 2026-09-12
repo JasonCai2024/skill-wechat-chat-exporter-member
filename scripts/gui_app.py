@@ -21,7 +21,7 @@ import threading
 from collections import defaultdict
 from pathlib import Path
 import tkinter as tk
-from tkinter import filedialog, ttk
+from tkinter import filedialog, messagebox, ttk
 from typing import Any, Dict, List, Optional
 
 # 兼容 PyInstaller 冻结打包环境
@@ -312,7 +312,19 @@ class WeChatExporterApp(ctk.CTk):
         self.refresh_btn = ctk.CTkButton(
             indicator_frame, text="🔄 刷新", width=65, height=24, command=self.start_bootstrap_thread
         )
-        self.refresh_btn.pack(side="right", padx=10, pady=4)
+        self.refresh_btn.pack(side="right", padx=(0, 10), pady=4)
+
+        self.select_db_btn = ctk.CTkButton(
+            indicator_frame,
+            text="📁 选目录",
+            width=70,
+            height=24,
+            fg_color=("gray75", "gray30"),
+            hover_color=("gray65", "gray40"),
+            text_color=("gray10", "gray95"),
+            command=self.handle_select_db_dir,
+        )
+        self.select_db_btn.pack(side="right", padx=(0, 6), pady=4)
 
         # ================= 3. 核心会话选择卡片 (极速 Treeview 架构，零拖动卡顿) =================
         sessions_card = ctk.CTkFrame(self, corner_radius=10)
@@ -517,8 +529,8 @@ class WeChatExporterApp(ctk.CTk):
             # 2. 定位 db_storage
             db_dir = export_chat.find_default_db_dir()
             if not db_dir or not db_dir.exists():
-                self.after(0, lambda: self.db_status_lbl.configure(text="🔴 未找到 db_storage"))
-                raise RuntimeError("未检测到微信 4.x 的 db_storage 目录，请确保微信正在运行并已登录。")
+                self.after(0, lambda: self.db_status_lbl.configure(text="🔴 未找到存储目录"))
+                raise RuntimeError("未自动检测到微信 4.x 的 db_storage 目录。若微信数据迁移至非标准目录，请点击上方【📁 选目录】手动指定。")
 
             self.db_dir = db_dir
             self.after(0, lambda: self.db_status_lbl.configure(text=f"🟢 存储就绪: {db_dir.parent.name}"))
@@ -785,6 +797,25 @@ class WeChatExporterApp(ctk.CTk):
         for item in self.tree.get_children():
             self.tree.delete(item)
         self.session_count_lbl.configure(text="共 0 个会话")
+
+    def handle_select_db_dir(self):
+        """让用户手动点选微信存储根目录或 xwechat_files / db_storage 文件夹。"""
+        chosen = filedialog.askdirectory(title="选择微信数据存储目录 (包含 xwechat_files 或 db_storage)")
+        if not chosen:
+            return
+        resolved = export_chat.resolve_db_dir_from_path(chosen)
+        if not resolved:
+            messagebox.showerror(
+                "目录未识别",
+                f"在选中的目录中未检测到有效的微信 4.x 数据库文件 (缺少 session.db)。\n\n"
+                f"您选择的路径：\n{chosen}\n\n"
+                "建议：请选择微信文件管理中设置的根文件夹，或直接进入 xwechat_files 目录选择对应账号文件夹。"
+            )
+            return
+
+        wechat_key.save_custom_db_dir(str(resolved))
+        self.action_status_lbl.configure(text=f"已保存自定义存储目录: {resolved.parent.name}")
+        self.start_bootstrap_thread()
 
     def open_login_dialog(self):
         LoginDialog(self, on_success_callback=self.start_bootstrap_thread)
