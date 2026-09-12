@@ -25,8 +25,12 @@ jobs:
 
       - name: Install Python Dependencies
         run: |
-          pip install --upgrade pip
-          pip install pysqlcipher3 zstandard customtkinter pyinstaller darkdetect
+          python -m pip install --upgrade pip setuptools wheel
+          pip install sqlcipher3 zstandard customtkinter pyinstaller darkdetect
+
+      - name: Verify Dependencies
+        run: |
+          python -c "import sqlcipher3, zstandard, customtkinter, darkdetect; print('macOS Python dependencies verified successfully!')"
 
       - name: Build macOS App
         run: |
@@ -35,7 +39,7 @@ jobs:
       - name: Compress App
         run: |
           cd dist_macos
-          zip -r 微信聊天记录导出助手-macOS.zip 微信聊天记录导出助手.app
+          zip -r -y 微信聊天记录导出助手-macOS.zip 微信聊天记录导出助手.app
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4

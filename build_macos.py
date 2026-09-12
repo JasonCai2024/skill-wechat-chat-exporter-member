@@ -49,6 +49,9 @@ def main():
         "--hidden-import=urllib.error",
         "--hidden-import=hmac",
         "--hidden-import=hashlib",
+        "--hidden-import=export_chat",
+        "--hidden-import=wechat_db",
+        "--hidden-import=wechat_key",
     ]
 
     # 检测 sqlcipher3 或 pysqlcipher3
